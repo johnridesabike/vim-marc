@@ -7,37 +7,26 @@ if exists('g:marc_plugin_loaded')
   finish
 endif
 
-function! Mrc21()
+function! s:MarcEdit(arg, ftype)
   let tmp_input = tempname()
   let tmp_output = tempname()
-  call writefile(getline(0, '$'), tmp_input, "a")
-  silent execute "!\"" . $MARCEDIT_PATH .
-        \"\\cmarcedit.exe\" -s " . fnameescape(tmp_input) .
-        \" -make -d " . fnameescape(tmp_output)
+  call writefile(getline(0, "$"), tmp_input, "a")
+  silent execute "!" .
+        \"\"" . $MARCEDIT_PATH . "\\cmarcedit.exe\" " .
+        \"-s " . fnameescape(tmp_input) .
+        \" " . a:arg . " " .
+        \"-d " . fnameescape(tmp_output)
   let new_buf = readfile(tmp_output)
-  call deletebufline(bufnr(), len(new_buf), '$')
+  silent call deletebufline(bufnr(), len(new_buf), "$")
   call setline(1, new_buf)
-  set filetype=mrc
   call delete(tmp_input)
   call delete(tmp_output)
+  execute "set filetype=" . a:ftype
 endfunction
-command! -nargs=0 Mrc21 call Mrc21()
 
-function! MrcMrk()
-  let tmp_input = tempname()
-  let tmp_output = tempname()
-  call writefile(getline(0, '$'), tmp_input, "a")
-  silent execute "!\"" . $MARCEDIT_PATH .
-        \"\\cmarcedit.exe\" -s " . fnameescape(tmp_input) .
-        \" -break -d " . fnameescape(tmp_output)
-  let new_buf = readfile(tmp_output)
-  call deletebufline(bufnr(), len(new_buf), '$')
-  call setline(1, new_buf)
-  set filetype=mrk
-  call delete(tmp_input)
-  call delete(tmp_output)
-endfunction
-command! -nargs=0 MrcMrk call MrcMrk()
+command! -nargs=0 MarcMake call s:MarcEdit("-make", "mrc")
+
+command! -nargs=0 MarcBreak call s:MarcEdit("-break", "mrk")
 
 let g:marc_plugin_loaded = 1
 
