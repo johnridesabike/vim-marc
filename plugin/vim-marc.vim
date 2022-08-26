@@ -1,13 +1,12 @@
-if empty($MARCEDIT_PATH)
-  echo "Warning: Vim could not detect a MarcEdit installation."
-  finish
-endif
-
 if exists('g:marc_plugin_loaded')
   finish
 endif
 
 function! s:MarcEdit(arg, ftype)
+  if empty($MARCEDIT_PATH)
+    echoerr "Error: Vim could not find a MarcEdit installation."
+    return
+  endif
   let tmp_input = tempname()
   let tmp_output = tempname()
   call writefile(getline(0, "$"), tmp_input, "a")
@@ -16,12 +15,16 @@ function! s:MarcEdit(arg, ftype)
         \"-s " . fnameescape(tmp_input) .
         \" " . a:arg . " " .
         \"-d " . fnameescape(tmp_output)
-  let new_buf = readfile(tmp_output)
-  silent call deletebufline(bufnr(), len(new_buf), "$")
-  call setline(1, new_buf)
   call delete(tmp_input)
-  call delete(tmp_output)
-  execute "set filetype=" . a:ftype
+  if filereadable(tmp_output)
+    let new_buf = readfile(tmp_output)
+    silent call deletebufline(bufnr(), len(new_buf), "$")
+    call setline(1, new_buf)
+    call delete(tmp_output)
+    execute "set filetype=" . a:ftype
+  else
+    echoerr "Error: MarcEdit could not process this buffer."
+  endif
 endfunction
 
 command! -nargs=0 MarcMake call s:MarcEdit("-make", "mrc")
