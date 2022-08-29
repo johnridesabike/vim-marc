@@ -2,8 +2,12 @@ if exists('g:marc_plugin_loaded')
   finish
 endif
 
+if !exists("g:marcedit_path") && exists("$MARCEDIT_PATH")
+  let g:marcedit_path = $MARCEDIT_PATH . "\\cmarcedit.exe"
+endif
+
 function! s:MarcEdit(arg, ftype)
-  if empty($MARCEDIT_PATH)
+  if !exists("g:marcedit_path")
     echoerr "Error: Vim could not find a MarcEdit installation."
     return
   endif
@@ -11,10 +15,10 @@ function! s:MarcEdit(arg, ftype)
   let tmp_output = tempname()
   call writefile(getline(0, "$"), tmp_input, "a")
   silent execute "!" .
-        \"\"" . $MARCEDIT_PATH . "\\cmarcedit.exe\" " .
-        \"-s " . fnameescape(tmp_input) .
-        \" " . a:arg . " " .
-        \"-d " . fnameescape(tmp_output)
+        \"\"" . g:marcedit_path . "\"" .
+        \" -s " . fnameescape(tmp_input) .
+        \" " . a:arg .
+        \" -d " . fnameescape(tmp_output)
   call delete(tmp_input)
   if filereadable(tmp_output)
     let new_buf = readfile(tmp_output)
@@ -27,9 +31,12 @@ function! s:MarcEdit(arg, ftype)
   endif
 endfunction
 
-command! -nargs=0 MarcMake call s:MarcEdit("-make", "mrc")
-
-command! -nargs=0 MarcBreak call s:MarcEdit("-break", "mrk")
+command! -nargs=0 MarcMake      call s:MarcEdit("-make", "mrc")
+command! -nargs=0 MarcBreak     call s:MarcEdit("-break", "mrk")
+command! -nargs=0 MarcToXml     call s:MarcEdit("-marcxml", "xml")
+command! -nargs=0 MarcFromXml   call s:MarcEdit("-xmlmarc", "mrc")
+command! -nargs=0 MarcToJson    call s:MarcEdit("-marc2json", "json")
+command! -nargs=0 MarcFromJson  call s:MarcEdit("-json2marc", "mrc")
 
 let g:marc_plugin_loaded = 1
 
