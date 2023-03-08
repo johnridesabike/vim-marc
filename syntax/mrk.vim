@@ -13,7 +13,7 @@ syntax match MrcSubField /\$\w/ contained
 " used % as delimiter to match /
 syntax match MrcSubPunct %\(:\|;\|,\|=\|/\)\(\$\w\)\@=% contained
 syntax match MrcEndPunct /\.$/ contained
-syntax match MrcIndicator /\(=\d\{3}\s\+\)\@<=\(\d\|\\\)\+/ contained
+syntax match MrcIndicator /\(=\(00\)\@!\d\{3}\s\+\)\@<=\(\d\|\\\)\+/ contained
 "" Define Colour Groups
 highlight link MrcLDR Identifier
 highlight link MrcField Normal
