@@ -16,7 +16,7 @@ syntax match MrcEndPunct /\.$/ contained
 syntax match MrcIndicator /\(=\d\{3}\s\+\)\@<=\(\d\|\\\)\+/ contained
 "" Define Colour Groups
 highlight link MrcLDR Identifier
-highlight link MrcField String
+highlight link MrcField Normal
 highlight link MrcDir Statement
 
 highlight link MrcSubField Keyword
