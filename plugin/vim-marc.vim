@@ -11,6 +11,11 @@ function! s:MarcEdit(arg, ftype)
     echoerr "Error: Vim could not find a MarcEdit installation."
     return
   endif
+  if &fileencoding !=? "utf-8"
+    echohl WarningMsg
+    echo printf("Warning: this file's encoding is %s. Vim-marc only supports utf-8.", &fileencoding)
+    echohl None
+  endif
   let tmp_input = tempname()
   let tmp_output = tempname()
   call writefile(getline(0, "$"), tmp_input, "a")
